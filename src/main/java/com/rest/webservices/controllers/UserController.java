@@ -4,13 +4,18 @@ package com.rest.webservices.controllers;
 import com.rest.webservices.exceptionHandler.UserAlreadyExists;
 import com.rest.webservices.exceptionHandler.UserNotFound;
 import com.rest.webservices.models.User;
+import com.rest.webservices.models.UsersList;
 import com.rest.webservices.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.hateoas.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
-import java.util.List;
+
+
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.methodOn;
 
 @RestController @RequestMapping("/users")
 public class UserController {
@@ -18,12 +23,32 @@ public class UserController {
     private UserRepository userRepository;
 
     @GetMapping
-    public List<User> getUsers() {
-        return userRepository.findAll();
+    public UsersList getUsers() {
+        UsersList usersList = new UsersList();
+        for (User user : userRepository.findAll()) {
+
+            Link link = linkTo(this.getClass())
+                    .slash(user.getId()).withSelfRel();
+
+            // Add link to singular resource
+            user.add(link);
+            usersList.getUsers().add(user);
+        }
+        Link selfLink =
+                linkTo(methodOn(this.getClass()).getUsers())
+                        .withSelfRel();
+
+        usersList.add(selfLink);
+
+        return usersList;
     }
     @GetMapping("/{id}")
     public User getUser(@PathVariable Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new UserNotFound("User not found"));
+
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFound("User not found"));
+        Link link = linkTo(methodOn(this.getClass()).getUsers()).withRel("all_users");
+        user.add(link);
+        return user;
     }
     @PostMapping
     @ResponseStatus(code = HttpStatus.CREATED)
