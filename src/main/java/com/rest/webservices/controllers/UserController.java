@@ -44,8 +44,10 @@ public class UserController {
     @GetMapping("/{id}")
     public User getUser(@PathVariable Long id) {
 
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFound("User with id " + id + " not found"));
-        Link link = linkTo(methodOn(this.getClass()).getUsers()).withRel("all_users");
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFound("User with id " + id + " not found"));
+        Link link = linkTo(methodOn(this.getClass()).getUsers())
+                .withRel("all_users");
         user.add(link);
         return user;
     }
@@ -67,8 +69,8 @@ public class UserController {
     }
     @PutMapping("/{id}")
     public User updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
-
-        User existingUser = userRepository.findById(id).orElseThrow(() -> new UserNotFound("User with id " + id + " not found"));
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new UserNotFound("User with id " + id + " not found"));
         existingUser.setName(user.getName());
         existingUser.setEmail(user.getEmail());
         return userRepository.save(existingUser);
