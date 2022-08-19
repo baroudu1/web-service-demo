@@ -1,6 +1,7 @@
 package com.rest.webservices.models;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -10,7 +11,10 @@ import org.springframework.hateoas.RepresentationModel;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.Size;
+import java.util.List;
 
+
+//@JsonFilter("UserFilter")
 @Entity
 @Table(name = "users")
 @Getter @Setter @NoArgsConstructor @ToString
@@ -26,10 +30,14 @@ public class User extends RepresentationModel<User> {
     @Email(message = "Email should be valid")
     private String email;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "user")
+    private List<Post> posts;
 
-    public User(String name, String email) {
+    public User(String name, String email , List<Post> posts) {
         this.name = name;
         this.email = email;
+        this.posts = posts;
     }
 
 }

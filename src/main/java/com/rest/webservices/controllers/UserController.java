@@ -30,7 +30,6 @@ public class UserController {
             Link link = linkTo(this.getClass())
                     .slash(user.getId()).withSelfRel();
 
-            // Add link to singular resource
             user.add(link);
             usersList.getUsers().add(user);
         }
@@ -45,7 +44,7 @@ public class UserController {
     @GetMapping("/{id}")
     public User getUser(@PathVariable Long id) {
 
-        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFound("User not found"));
+        User user = userRepository.findById(id).orElseThrow(() -> new UserNotFound("User with id " + id + " not found"));
         Link link = linkTo(methodOn(this.getClass()).getUsers()).withRel("all_users");
         user.add(link);
         return user;
@@ -69,7 +68,7 @@ public class UserController {
     @PutMapping("/{id}")
     public User updateUser(@PathVariable Long id, @Valid @RequestBody User user) {
 
-        User existingUser = userRepository.findById(id).orElseThrow(() -> new UserNotFound("User not found"));
+        User existingUser = userRepository.findById(id).orElseThrow(() -> new UserNotFound("User with id " + id + " not found"));
         existingUser.setName(user.getName());
         existingUser.setEmail(user.getEmail());
         return userRepository.save(existingUser);
