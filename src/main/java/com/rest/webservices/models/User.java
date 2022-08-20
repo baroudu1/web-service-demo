@@ -14,7 +14,7 @@ import javax.validation.constraints.Size;
 import java.util.List;
 
 
-//@JsonFilter("UserFilter")
+//@JsonFilter(FiltersName.UserFilter.name())
 @Entity
 @Table(name = "users")
 @Getter @Setter @NoArgsConstructor @ToString
